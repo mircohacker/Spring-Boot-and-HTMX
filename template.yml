@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Demo for serverside rendering with spring boot, freemarker and HTMX
+
+Resources:
+  ssrDemo:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: org.example.ssrdemo.StreamLambdaHandler::handleRequest
+      Runtime: java21
+      CodeUri: .
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 60
+      ReservedConcurrentExecutions: 20
+      FunctionUrlConfig:
+        AuthType: NONE
+      SnapStart:
+        ApplyOn: PublishedVersions
+Outputs:
+  MyFunctionUrlEndpoint:
+    Description: "Deployed app endpoint"
+    Value:
+      Fn::GetAtt: ssrDemoUrl.FunctionUrl

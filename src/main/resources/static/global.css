@@ -1,0 +1,6 @@
+.htmx-request.loading-indicator{
+    display: block;
+}
+.loading-indicator{
+    display: none;
+}
