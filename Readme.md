@@ -7,8 +7,8 @@ Apache Freemarker is used as a template language and Bootstrap as a CSS framewor
 
 For complex interaction heavy use cases the sample includes a mechanism to render a vue app at a specific route as well.
 
-The accompanying blog post can be read [here](docs/article_part_1)
-and [here](https://www.codecentric.de/wissens-hub/blog/spring-boot-and-htmx-the-boring-app)
+The accompanying blog post can be read [in this repo](docs/article_part_1.md)
+and [on my employers blog](https://www.codecentric.de/wissens-hub/blog/spring-boot-and-htmx-the-boring-app)
 
 ## Start the spring app with embedded vue app
 
