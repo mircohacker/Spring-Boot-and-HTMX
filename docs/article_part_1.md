@@ -616,7 +616,7 @@ More on how to model the data flows between the vue app and the backend will be 
 
 We are now at the end of what I wanted to show you today. Possible next steps are:
 
-- Deployment: Currently the app only runs locally. In order to be useful at all, we need to deploy it, so users can reach it.  A follow-up post for this is already planed.
+- Deployment: Currently the app only runs locally. In order to be useful at all, we need to deploy it, so users can reach it. More about this in [this Blogpost](https://www.codecentric.de/wissens-hub/blog/spring-boot-and-htmx-deployment-to-aws-lambda)
 
 - Improved embedded vue app. Currently, the vue app does not interact with the spring boot app at all. A mechanism to pass data to and from the vue app has to be developed. There is also a follow-up post planned for this.
 
