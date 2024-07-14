@@ -73,7 +73,7 @@ Therefor Mustache cannot be used to create atomic reusable components.
 The next natural stop is Handlebars.java.
 It extends the Mustache syntax and offers a way to parametrise partials.
 This can be used to build components.
-With syntax like `{{> content}}` inside the component you can create a named slot where other things could insert.
+With syntax like `{{> content}}` inside the component you can create a named slot where other things could be inserted.
 A full example would look like this:
 
 `site.hbs` will include the `layout.hbs` file and replace certain parameters within the layout partial.
@@ -212,15 +212,15 @@ Next we create the following `index.tlfh` file in `src/main/resources/templates`
 </body>
 ```
 
-Run `./gradlew booRun` and got to http://localhost:8080 to see our beautiful first rendered page.
+Run `./gradlew booRun` and go to http://localhost:8080 to see our beautiful first rendered page.
 
 Note: The default file extension for freemarker is `.ftl`.
 Spring uses the sensible extensions `.ftlh` which tells freemarker to escape HTML passed via a model.
 
-Now to make is less bland I (as a backend developer) add bootstrap 😉.
+Now to make it less bland I (as a backend developer) add bootstrap 😉.
 It is up to you to choose tailwind, bulma, materialUI or something completely different.
 Because I do want to have this whole app as simple to maintain as possible,
-I add bootstrap as webjar.
+I added bootstrap as webjar.
 This way the bootstrap dependency version is discoverable via the `build.gradle` file and by extensions also by tools
 like renovate or dependabot.
 This leads to easier version updates.
@@ -235,7 +235,7 @@ with fixed versions somewhere deep inside some template file and I don't want th
 
 To include the webjars we need to add dependencies `org.webjars:bootstrap:5.3.3` and `org.webjars:webjars-locator:0.52`
 to our `build.gradle`.
-The first one contains the build artifacts of this version.
+The first one contains the build artefacts of this version.
 The `webjar-locator` is responsible to resolve the path `/webjars/bootstrap/css/bootstrap.min.css` to the actual file
 stored in the dependency.
 Our "styled" index looks like this
@@ -370,34 +370,34 @@ With the omitted navigation bar the final rendered results are looking like this
 
 This looks promising, but why does it feel like the beginning of the
 internet again? On every click the whole page does a full reload
-including header and all the resources. Also, the only loading indicator
+including the header and all the resources. Also, the only loading indicator
 is this small icon in the browser tab.
-Of course for this app the loading times are trivial as we are effectively reading some bytes from memory and sending
-them over a zero latency connection to the browser.
+Of course for this app the loading times are trivial as we are effectively reading some data from memory and sending it
+over a zero latency connection to the browser.
 But let's assume this connection is slow and the business logic is complex.
 So lets make this page "modern" and snappy again.
 
 **_HTMX to the rescue._**
 
-The basic principle of HTMX is, to replace a certain part of the
-website with content received from the server. Traditionally when you click
-on a link the server sends the whole new website over the wire, the
+The basic principle of HTMX is to replace a certain part of the
+website with content received from the server. Traditionally, when you click
+on a link the server sends the whole updated website over the wire, and the
 browser parses and renders it again from scratch. With HTMX we can tell
 HTMX via the `hx-target` attribute on the link to just replace the
 contents of the referenced html element with the response from the
-webserver. This way the browser only needs to rerender this div and we
+webserver. This way the browser only needs to rerender this div. Also, we
 can also do nice things like displaying a custom loading spinner.
 
 So how do I do this?
 
 My app now has like two ~~hundred~~ links, do I really need to add these magical `hx-` attributes to all those links to
 enable them for HTMX?
-Thankfully no! There is an even more magical attribute called [`hx-boost`](https://htmx.org/attributes/hx-boost/). If
+No - thankfully there is an even more magical attribute called [`hx-boost`](https://htmx.org/attributes/hx-boost/). If
 this attribute is
-present on any parent element of an anchor (`<a>`) tag HTMX automagically does its magic.
+present on any parent element of an anchor (`<a>`) tag HTMX automagically does its thing.
 To use HTMX we first need to add the webjar dependency `org.webjars.npm:htmx.org:1.9.11` to our `build.gradle` and
 include it in the header of our page macro (`<script src="/webjars/htmx.org/dist/htmx.min.js"></script>`).
-Lastly add the magic `hx-boost` to the body of the page template.
+Lastly add `hx-boost` to the body of the page template.
 
 ```html
 <body
@@ -422,7 +422,8 @@ Well our backend does not know anything about this partial update
 mechanism and happily sends the whole template rendered again when
 prompted. This leads to the fail you see above.
 
-So how do we only send partial updates when necessary.
+So how do we only send partial updates when necessary?
+
 When HTMX makes requests it adds certain headers. On the backend side of things we can simply render
 different templates depending on the presence of the most basic header
 (`HX-Request=true`). HTMX also sends a [bunch of other
@@ -481,7 +482,7 @@ the [events provided by HTMX](https://htmx.org/reference/#events) as an escape h
 
 ### Error handling
 
-When a HTMX boosted request fails for any reason, nothing visible happens.
+When a HTMX boosted request fails for any reason, by default, nothing visible happens.
 No DOM update, no toast. Only a message in the browser console that a certain request failed.
 To handle this case gracefully, HTMX provides the [response targets](https://htmx.org/extensions/response-targets/)
 extension.
@@ -542,28 +543,27 @@ class MyErrorController {
 ```
 
 This controller defines the global exception handler for all types of exception.
-First if extracts various values from the exception and the request and builds the model with it.
-As our usual pattern we decide if this an HTMX request based on the header `HX-Request`.
-If not a simple page is rendered from the model.
-But if the request is an HTMX request we modify the behaviour of HTMX by setting certain response headers.
+First, it extracts various values from the exception and the request and builds the model with it.
+As our usual pattern we decide if this is an HTMX request based on the header `HX-Request`.
+If not, a simple page is rendered from the model.
+But if the request is an HTMX request, we modify the behaviour of HTMX by setting certain response headers.
 
 First with `HX-Reswap=beforeend` we tell HTMX to not replace the content of the defined error target, but instead append
 the returned HTML at the end of the already present inner HTML.
 This way the errors are stacking in the toast container until the user dismisses them.
 
-With the second header (`HX-Push-Url=false`) we tell HTMX to not push the URL to the browser address bar and history.
+With the second header (`HX-Push-Url=false`), we tell HTMX to not push the URL to the browser address bar and history.
 This is done to keep the view in sync with the URL.
 We do not replace the content of the page, so the URL should stay the same as well.
 
 To demonstrate this behaviour I added some more entries to the navigation bar.
 
-* The "Graceful error" renders a specific error template from within the controller. This could be used for specific
-  business error only happening there.
-* The "Uncaught exception" throws a not implemented exception. This path leads to the ErrorController above, which maps
+* The "Graceful error" renders a specific error template from within the controller. This could be used for specific business errors only happening there.
+* The "Uncaught exception" throws a not `NotImplementedError`. This path leads to the ErrorController above, which maps
   this exception to Status code 500 and renders the generic template.
-* The "Not found" items maps to no controller or ressource at all. This prompts Spring to throw
+* The "Not found" item maps to no controller or resource at all. This prompts Spring to throw
   a `NoResourceFoundException` which is handled by the error controller as well. This class implements
-  the `ErrorResponse` interface and therefor provides its own status code (404).
+  the `ErrorResponse` interface and therefore provides its own status code (404).
 
 The resulting toasts look like this:
 
@@ -571,23 +571,23 @@ The resulting toasts look like this:
 
 ## What about more interactivity?
 
-Of course javascript is not forbidden just because you started your application in the way described in this post.
+Of course, JavaScript is not forbidden just because you started your application in the way described in this post.
 In this sample I update the highlighted nav-bar element via a
-simple hook whenever either a page loads or a HTMX request occurs. Naturally
-this could also be achieved with serverside rendering. But why make it complicated if six
-lines of Javascript are sufficient.
+simple hook, whenever either a page loads or a HTMX request occurs. Of course,
+this could also be achieved with server-side rendering, but why make it complicated if six
+lines of JavaScript are sufficient.
 See the
 file [navbar-highlighting.js](https://github.com/mircohacker/Spring-Boot-and-HTMX/blob/main/src/main/resources/static/navbar-highlighting.js)
 for the implementation details.
 
-Ok simple javascript snippets are possible, but what if my application has this one workflow,
-where there is a lot of user interactivity wanted and beneficial?
-Am I now cursed to abstain from js-frameworks altogether and implement everything with plain and painful javascript like
+Ok, simple JavaScript snippets are possible, but what if my application has this one workflow 
+where there is a lot of user interactivity needed?
+Am I now cursed to abstain from JavaScript-frameworks altogether and implement everything with plain and painful JavaScript like
 in the olden days?
-Of course, it is possible to integrate a classic single page app with this setup.
-I chose a vue application, but I am sure you can also transfer the important bits to your js framework of the ~~year~~
+No! Of course, it is possible to integrate a classic single page app with this setup.
+I choose a vue application, but I am sure you can also transfer the important bits to your js framework of the ~~year~~
 ~~month~~ week.
-The only requirement is, that it can be built to static files. So no Next.js et al.
+The only requirement is that it can be built to static files. So no Next.js et al.
 
 For embedding this vue app into the otherwise pre rendered templates
 there are three magic ingredients:
@@ -616,17 +616,16 @@ More on how to model the data flows between the vue app and the backend will be 
 
 We are now at the end of what I wanted to show you today. Possible next steps are:
 
-- Deployment: Currently the app only runs locally. In order to be useful at all, we need to deploy it, so users can reach it. 
-  A follow-up post for this is already in planed.
+- Deployment: Currently the app only runs locally. In order to be useful at all, we need to deploy it, so users can reach it.  A follow-up post for this is already planed.
 
 - Improved embedded vue app. Currently, the vue app does not interact with the spring boot app at all. A mechanism to pass data to and from the vue app has to be developed. There is also a follow-up post planned for this.
 
 - Testing: The current testing setup is lacking and also only works locally.
-  For productive use all implemented endpoints have to be tested.
+  For productive use, all implemented endpoints have to be tested.
 
-- Persistence: As you possibly already noticed, does this app not provide any means to add products.
-  As our lambda has no way to store state between requests this storage has to implemented using external mechanisms
-  like a database or some flat file in S3.
+- Persistence: As you have probably already noticed, this app does not provide any means to add products.
+  As our lambda has no way to store state between requests, this storage has to implemented using external mechanisms
+  like a database or some files in S3.
   As a first stop I would try an [AWS Dynamo simple table](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html).
 
 ## Summary
@@ -638,6 +637,6 @@ It sure suits me.
 
 The old "Right tool for the right job" proverb still holds true.
 HTMX can enable you to shift a lot of logic to the backend and make the frontend ~~dumber~~ simpler.
-But for some functions and use cases javascript is simply the better tool.
-As we saw this does not necessarily require to a full-blown frontend framework.
-We can use a javascript frameworks where it makes sense and stay with a simple serverside rendered app where it is not.
+But for some functions and use cases, JavaScript is simply the better tool.
+As we saw this does not necessarily require a full blown frontend app.
+We can use a JavaScript framework where it makes sense and stay with a simple serverside rendered app where not.
